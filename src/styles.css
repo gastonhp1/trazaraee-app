@@ -311,8 +311,7 @@ select {
 .chip.good,
 .chip.status-funciona,
 .chip.status-refuncionalizado,
-.chip.status-donado,
-.chip.status-vendido {
+.chip.status-donado {
   background: var(--good-bg);
   color: var(--good);
 }

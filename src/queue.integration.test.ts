@@ -93,12 +93,12 @@ run("cola offline contra la API real", () => {
     await request("POST", `/assets/${pc}/events`, { type: "prueba", payload: { result: "ok" } });
 
     setOnline(false);
-    // Venta sin borrado de datos: el servidor la va a rechazar...
+    // Donación sin borrado de datos: el servidor la va a rechazar...
     await sendOrQueue({
       method: "POST",
       path: `/assets/${pc}/events`,
-      body: { type: "venta", payload: { destinatario: "X" }, client_id: newClientId() },
-      description: "Venta sin borrado",
+      body: { type: "donacion", payload: { destinatario: "X" }, client_id: newClientId() },
+      description: "Donación sin borrado",
     });
     // ...pero esta nota, que viene después, tiene que llegar igual.
     await sendOrQueue({

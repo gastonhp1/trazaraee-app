@@ -135,7 +135,7 @@ export function LotScreen() {
                 <td>{kg(balance.stock_kg)}</td>
               </tr>
               <tr>
-                <td>Reutilizado (venta, donación, instalado)</td>
+                <td>Reutilizado (donado o instalado)</td>
                 <td>{kg(balance.reuse_kg)}</td>
               </tr>
               <tr>

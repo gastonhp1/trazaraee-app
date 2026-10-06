@@ -4,13 +4,12 @@ import type { Asset, EventType, Status } from "./types";
 // acciones válidas y para predecir el estado cuando una operación queda en la cola offline.
 // La fuente de verdad es el servidor: si discrepan, el servidor rechaza y la cola lo informa.
 
-const TERMINAL: ReadonlySet<Status> = new Set(["vendido", "donado", "scrap", "desarmado", "instalado"]);
+const TERMINAL: ReadonlySet<Status> = new Set(["donado", "scrap", "desarmado", "instalado"]);
 
 export interface Availability {
   prueba: boolean;
   borrado: boolean;
   refuncionalizacion: boolean;
-  venta: boolean;
   donacion: boolean;
   desarme: boolean;
   scrap: boolean;
@@ -31,7 +30,6 @@ export function availability(a: Asset): Availability {
     prueba: ["ingresado", "funciona", "falla"].includes(a.status),
     borrado: !terminal && a.has_storage,
     refuncionalizacion: works && wipeOk,
-    venta: (works || refurb) && wipeOk,
     donacion: (works || refurb) && wipeOk,
     desarme: a.status === "funciona" || a.status === "falla",
     scrap: a.status === "falla",
@@ -57,9 +55,6 @@ export function predictStatus(
       break;
     case "refuncionalizacion":
       status = "refuncionalizado";
-      break;
-    case "venta":
-      status = "vendido";
       break;
     case "donacion":
       status = "donado";

@@ -12,7 +12,7 @@ import { EVENT_LABEL, formatDate, KINDS, KIND_LABEL, STATUS_LABEL } from "../lab
 import { sendOrQueue } from "../send";
 import type { ApiEvent, Asset, AssetRef, EventType, Genealogy, Kind } from "../types";
 
-type Panel = "borrado" | "venta" | "donacion" | "desarme" | "instalarEn" | "recibir" | "nota" | "etiqueta";
+type Panel = "borrado" | "donacion" | "desarme" | "instalarEn" | "recibir" | "nota" | "etiqueta";
 
 interface Row {
   public_id: string;
@@ -265,11 +265,6 @@ export function AssetScreen() {
               Marcar como refuncionalizado
             </button>
           )}
-          {av.venta && (
-            <button className="btn" onClick={() => toggle("venta")}>
-              Venta
-            </button>
-          )}
           {av.donacion && (
             <button className="btn" onClick={() => toggle("donacion")}>
               Donación
@@ -304,14 +299,13 @@ export function AssetScreen() {
         </div>
         {av.bloqueadoPorBorrado && (
           <p className="notice">
-            Este equipo tiene almacenamiento: antes de refuncionalizarlo, venderlo, donarlo o instalarlo hay que registrar un borrado de datos
+            Este equipo tiene almacenamiento: antes de refuncionalizarlo, donarlo o instalarlo hay que registrar un borrado de datos
             exitoso.
           </p>
         )}
       </section>
 
       {panel === "borrado" && <WipeForm busy={busy} onSubmit={(p) => sendEvent("borrado", p, "Borrado de datos")} />}
-      {panel === "venta" && <RecipientForm title="Venta" busy={busy} onSubmit={(d) => sendEvent("venta", { destinatario: d }, "Venta")} />}
       {panel === "donacion" && (
         <RecipientForm title="Donación" busy={busy} onSubmit={(d) => sendEvent("donacion", { destinatario: d }, "Donación")} />
       )}
@@ -366,7 +360,7 @@ function Detail({ type, payload }: { type: string; payload: Record<string, unkno
     parts.push(String(payload.method ?? ""));
     parts.push(payload.result === "ok" ? "exitoso" : "falló");
   }
-  if ((type === "venta" || type === "donacion") && payload.destinatario) parts.push(`a ${String(payload.destinatario)}`);
+  if (type === "donacion" && payload.destinatario) parts.push(`a ${String(payload.destinatario)}`);
   if (type === "nota" && payload.text) parts.push(String(payload.text));
   const text = parts.filter(Boolean).join(" · ");
   return text ? <span className="detail">{text}</span> : null;
@@ -449,7 +443,7 @@ function RecipientForm({ title, busy, onSubmit }: { title: string; busy: boolean
   return (
     <section className="card">
       <h2>{title}</h2>
-      <Field label={title === "Venta" ? "Comprador" : "Institución o persona que recibe"}>
+      <Field label="Institución o persona que recibe">
         <input value={who} onChange={(e) => setWho(e.target.value)} />
       </Field>
       <p className="hint">Este dato lo ve sólo el personal de la cooperativa, no quien escanee el QR.</p>

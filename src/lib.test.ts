@@ -60,25 +60,25 @@ describe("availability (espejo de las reglas del backend)", () => {
   it("un equipo recién ingresado sólo se puede probar", () => {
     const a = availability(base);
     expect(a.prueba).toBe(true);
-    expect(a.venta).toBe(false);
+    expect(a.donacion).toBe(false);
     expect(a.desarme).toBe(false);
   });
 
-  it("con almacenamiento sin borrar no se puede vender ni instalar", () => {
+  it("con almacenamiento sin borrar no se puede donar ni instalar", () => {
     const a = availability({ ...base, status: "funciona", has_storage: true });
-    expect(a.venta).toBe(false);
+    expect(a.donacion).toBe(false);
     expect(a.instalarEn).toBe(false);
     expect(a.borrado).toBe(true);
     expect(a.bloqueadoPorBorrado).toBe(true);
     const ok = availability({ ...base, status: "funciona", has_storage: true, wiped: true });
-    expect(ok.venta && ok.donacion && ok.instalarEn && ok.refuncionalizacion).toBe(true);
+    expect(ok.donacion && ok.instalarEn && ok.refuncionalizacion).toBe(true);
     expect(ok.bloqueadoPorBorrado).toBe(false);
   });
 
   it("scrap sólo desde 'no funciona' y los estados finales no admiten nada", () => {
     expect(availability({ ...base, status: "falla" }).scrap).toBe(true);
     expect(availability({ ...base, status: "funciona" }).scrap).toBe(false);
-    const done = availability({ ...base, status: "vendido", has_storage: true });
+    const done = availability({ ...base, status: "donado", has_storage: true });
     expect(Object.values({ ...done, bloqueadoPorBorrado: false }).some(Boolean)).toBe(false);
   });
 });

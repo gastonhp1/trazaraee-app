@@ -92,7 +92,7 @@ export function Settings() {
         <section className="card warn">
           <h2>Rechazadas por el servidor ({failed.length})</h2>
           <p className="hint">
-            El servidor no aceptó estas operaciones (por ejemplo, vender un equipo sin borrado de datos). Revisalas: se
+            El servidor no aceptó estas operaciones (por ejemplo, donar un equipo sin borrado de datos). Revisalas: se
             pueden reintentar o descartar.
           </p>
           <ul className="list">

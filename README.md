@@ -1,8 +1,10 @@
 # TrazaRAEE App
 
-PWA para usar en planta (celular o tablet) en una cooperativa de reciclaje informático: recibir lotes, etiquetar equipos con QR, registrar pruebas, borrado de datos, desarme, ventas, donaciones y salidas de scrap. Funciona sin conexión y sincroniza sola cuando vuelve la señal. Repo hermano: `trazaraee-api`.
+PWA para usar en planta (celular o tablet) en una cooperativa de reciclaje informático: recibir lotes, etiquetar equipos con QR, registrar pruebas, borrado de datos, desarme, donaciones y salidas de scrap. Funciona sin conexión y sincroniza sola cuando vuelve la señal. Repo hermano: `trazaraee-api`.
 
-> **Estado: prototipo.** Las pantallas siguen un flujo inferido de información pública sobre cooperativas de este tipo (ingreso → prueba → desarme/borrado → venta, donación o scrap). **No fue probado en un galpón real ni con usuarios.** La interfaz se recorrió de punta a punta en un Chromium con formato de celular contra la API real (ver Capturas), pero no en dispositivos reales. Lo primero que hay que hacer con esto es llevarlo a una planta y mirar cómo se trabaja de verdad.
+> **Sin fines de lucro.** Está pensada para que una cooperativa recupere equipos y los **done a escuelas y otras instituciones**, y para dar cuenta de a dónde fue cada cosa. No hay circuito de venta ni de compradores.
+>
+> **Estado: prototipo.** Las pantallas siguen un flujo inferido de información pública sobre cooperativas de este tipo (ingreso → prueba → desarme/borrado → donación o scrap). **No fue probado en un galpón real ni con usuarios.** La interfaz se recorrió de punta a punta en un Chromium con formato de celular contra la API real (ver Capturas), pero no en dispositivos reales. Lo primero que hay que hacer con esto es llevarlo a una planta y mirar cómo se trabaja de verdad.
 
 ## Capturas
 
@@ -17,7 +19,7 @@ Tomadas en Chromium con viewport de celular (390×844) contra la API real, con *
     <td align="center" width="33%"><img src="docs/screenshots/03-equipo.png" alt="Equipo con genealogía e historial"><br><sub>Equipo: acciones válidas, genealogía e historial</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/04-borrado-pendiente.png" alt="Equipo con borrado de datos pendiente"><br><sub>Venta, donación y reuso bloqueados hasta registrar el borrado de datos</sub></td>
+    <td align="center"><img src="docs/screenshots/04-borrado-pendiente.png" alt="Equipo con borrado de datos pendiente"><br><sub>Donación y reuso bloqueados hasta registrar el borrado de datos</sub></td>
     <td align="center"><img src="docs/screenshots/05-desarme.png" alt="Formulario de desarme"><br><sub>Desarme: cada componente rescatado recibe su propio QR</sub></td>
     <td align="center"><img src="docs/screenshots/06-desarme-etiquetas.png" alt="Etiquetas de los componentes"><br><sub>Etiquetas de los componentes y su vínculo con el equipo de origen</sub></td>
   </tr>
@@ -54,7 +56,7 @@ Tomadas en Chromium con viewport de celular (390×844) contra la API real, con *
 | Ruta | Para qué |
 |---|---|
 | `/ingreso` | Registrar un lote (generador, peso) y etiquetar equipos; imprime etiquetas |
-| `/equipo` → `/equipo/:id` | Escanear un equipo: sólo muestra las acciones válidas según su estado (prueba, borrado, refuncionalizar, venta, donación, desarme, instalar componente, scrap) |
+| `/equipo` → `/equipo/:id` | Escanear un equipo: sólo muestra las acciones válidas según su estado (prueba, borrado, refuncionalizar, donación, desarme, instalar componente, scrap) |
 | `/lote` → `/lote/:id` | Registrar salidas de material por fracción y ver el balance de masas |
 | `/ajustes` | Servidor, clave de la estación, operaciones pendientes y rechazadas |
 | `/a/:id`, `/l/:id` | **Vista pública** que abre quien escanea el QR (sin serial, sin destinatarios, sin personas) |
@@ -62,7 +64,7 @@ Tomadas en Chromium con viewport de celular (390×844) contra la API real, con *
 ## Decisiones de diseño
 
 - **Offline primero.** Los IDs y un `client_id` por operación se generan en el dispositivo. Las escrituras que no llegan al servidor van a una cola en IndexedDB y se reenvían en orden; reintentar nunca duplica (el backend es idempotente por `client_id` / `public_id`). Las etiquetas QR se generan en el dispositivo, así que se pueden imprimir sin conexión.
-- **Operaciones rechazadas no se pierden en silencio.** Si el servidor rechaza algo que se hizo offline (por ejemplo vender un equipo sin borrado de datos), va a "rechazadas" en Ajustes para reintentar o descartar, y no frena al resto de la cola.
+- **Operaciones rechazadas no se pierden en silencio.** Si el servidor rechaza algo que se hizo offline (por ejemplo donar un equipo sin borrado de datos), va a "rechazadas" en Ajustes para reintentar o descartar, y no frena al resto de la cola.
 - **Estado anticipado sin conexión.** Mientras una operación está en cola, la app anticipa el nuevo estado con una copia de la máquina de estados (`src/actions.ts`, espejo de `app/rules.py` del backend). La fuente de verdad es siempre el servidor.
 - **Estaciones, no personas.** La clave identifica un puesto de trabajo (mesa de desarme, banco de pruebas). La app no pide ni muestra quién hizo cada paso.
 - **Hecha para el galpón:** botones grandes, pocos pasos por pantalla, escaneo antes que tipeo, contraste alto, modo oscuro automático.

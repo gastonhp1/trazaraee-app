@@ -21,7 +21,7 @@ export function Home() {
         </Link>
         <Link className="tile" to="/equipo">
           <strong>Equipo</strong>
-          <span>Escanear: probar, borrar, desarmar, vender, donar</span>
+          <span>Escanear: probar, borrar, desarmar, donar</span>
         </Link>
         <Link className="tile" to="/lote">
           <strong>Lote y balance</strong>

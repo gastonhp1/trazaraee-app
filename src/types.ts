@@ -4,7 +4,6 @@ export type Status =
   | "funciona"
   | "falla"
   | "refuncionalizado"
-  | "vendido"
   | "donado"
   | "scrap"
   | "desarmado"
@@ -24,7 +23,6 @@ export type EventType =
   | "prueba"
   | "borrado"
   | "refuncionalizacion"
-  | "venta"
   | "donacion"
   | "scrap"
   | "nota";
