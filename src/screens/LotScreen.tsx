@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { cacheLot, cachedLot } from "../cache";
 import { Field, Queued } from "../components/Notice";
+import { Photos } from "../components/Photos";
 import { PrintLabels } from "../components/QrLabel";
 import { api, NetworkError } from "../http";
 import { newClientId } from "../ids";
@@ -158,6 +159,8 @@ export function LotScreen() {
           <p className="hint">Al desarmar o descartar un equipo, su peso tiene que reaparecer como componentes y como material.</p>
         </section>
       )}
+
+      <Photos kind="lots" id={lot.public_id} label={`lote ${lot.generator_name}`} />
 
       <section className="card">
         <h2>Registrar salida de material</h2>

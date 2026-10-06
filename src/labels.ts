@@ -50,6 +50,8 @@ export const EVENT_LABEL: Record<string, string> = {
   instalacion: "Instalado en otro equipo",
   componente_instalado: "Componente instalado",
   fraccion: "Salida de material",
+  foto: "Foto",
+  foto_eliminada: "Foto eliminada",
   nota: "Nota",
 };
 

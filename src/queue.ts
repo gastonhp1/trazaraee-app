@@ -11,6 +11,9 @@ export interface QueueItem {
   body: unknown;
   description: string;
   createdAt: string;
+  /** Foto pendiente de envío (se guarda en IndexedDB junto con la operación). */
+  blob?: Blob;
+  contentType?: string;
 }
 
 export interface FailedItem extends QueueItem {
@@ -39,11 +42,11 @@ export async function listFailed(): Promise<FailedItem[]> {
   return (await get<FailedItem[]>(FAILED_KEY)) ?? [];
 }
 
-export function enqueue(op: Omit<QueueItem, "id" | "createdAt">): Promise<void> {
+export function enqueue(op: Omit<QueueItem, "id" | "createdAt"> & { id?: string }): Promise<void> {
   return locked(async () => {
     const items = await listQueue();
-    const body = op.body as { client_id?: string; public_id?: string } | null;
-    const id = body?.client_id ?? body?.public_id ?? crypto.randomUUID();
+    const body = op.body as { client_id?: string; public_id?: string } | null | undefined;
+    const id = op.id ?? body?.client_id ?? body?.public_id ?? crypto.randomUUID();
     if (!items.some((i) => i.id === id)) {
       items.push({ ...op, id, createdAt: new Date().toISOString() });
       await set(QUEUE_KEY, items);
@@ -68,7 +71,13 @@ export function flushQueue(): Promise<FlushResult> {
     while (items.length > 0) {
       const item = items[0];
       try {
-        await request(item.method, item.path, item.body);
+        await request(
+          item.method,
+          item.path,
+          item.body,
+          true,
+          item.blob ? { blob: item.blob, contentType: item.contentType ?? "image/jpeg" } : undefined,
+        );
         items = items.slice(1);
         sent++;
       } catch (err) {

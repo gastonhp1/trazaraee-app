@@ -38,6 +38,17 @@ Tomadas en Chromium con viewport de celular (390×844) contra la API real, con *
   </tr>
 </table>
 
+**Fotos** (las imágenes de estas capturas son placeholders sintéticos, no equipos reales):
+
+<table>
+  <tr>
+    <td align="center" width="25%"><img src="docs/screenshots/13-ingreso-con-fotos.png" alt="Ingreso con fotos"><br><sub>Ingreso: fotos del equipo antes de registrarlo</sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/11-fotos.png" alt="Galería de fotos de un equipo"><br><sub>Equipo: galería de fotos</sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/12-visor-foto.png" alt="Visor de foto"><br><sub>Visor, con opción de eliminar</sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/14-foto-pendiente.png" alt="Foto pendiente de envío"><br><sub>Sin conexión: la foto queda "Pendiente" y se envía sola</sub></td>
+  </tr>
+</table>
+
 ## Pantallas
 
 | Ruta | Para qué |
@@ -56,6 +67,16 @@ Tomadas en Chromium con viewport de celular (390×844) contra la API real, con *
 - **Estaciones, no personas.** La clave identifica un puesto de trabajo (mesa de desarme, banco de pruebas). La app no pide ni muestra quién hizo cada paso.
 - **Hecha para el galpón:** botones grandes, pocos pasos por pantalla, escaneo antes que tipeo, contraste alto, modo oscuro automático.
 - **Etiquetas 60×30 mm** con QR, descripción y código corto. El número de serie nunca va en la etiqueta. Usá poliéster/vinilo con adhesivo industrial.
+
+## Fotos
+
+Cada lote y cada equipo puede llevar fotos de lo que se está reciclando ("Sacar foto" en el ingreso y en las pantallas de equipo y lote).
+
+- **Cámara nativa.** Se usa un campo de archivo con `capture="environment"`: en el celular abre la cámara trasera sin pedir permisos ni código propio; en una compu abre el selector de archivos.
+- **Se reducen en el dispositivo** (lado máximo 1600 px, JPEG calidad 0,8). Al volver a codificar la imagen se pierden los metadatos EXIF, incluida la ubicación GPS, y se respeta la orientación.
+- **Funcionan sin conexión.** La foto se guarda en la cola (IndexedDB) y se envía en orden, después de crear el lote o equipo. Se ve marcada como "Pendiente".
+- **Son privadas.** Solo las ven las estaciones autenticadas; nunca aparecen en la vista pública ni en su historial.
+- **Se pueden eliminar.** Borra la imagen del servidor; el historial conserva que existió una foto (con su hash), no la imagen.
 
 ## Correr en desarrollo
 
@@ -94,6 +115,9 @@ La prueba de integración cubre: guardar sin conexión y sincronizar en orden (l
 - Los íconos de la PWA son un SVG provisorio; para instalarla bien en algunos Android hacen falta PNG de 192 y 512 px.
 - El service worker cachea sólo el "cascarón" de la app; no hay búsqueda ni listados offline (se trabaja escaneando equipos que este dispositivo ya vio o creó).
 - Sin autenticación de personas, roles ni permisos finos: una clave por estación.
+- La cámara (`capture`) **no se probó en celulares reales**; en las pruebas se inyectaron imágenes de prueba en el campo de archivo.
+- Eliminar una foto requiere conexión (no se encola).
+- La app no detecta personas ni pantallas en las fotos: sólo avisa que hay que evitarlas.
 - Interfaz sólo en español.
 
 ## Licencia

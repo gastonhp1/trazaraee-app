@@ -4,6 +4,7 @@ import { availability, predictStatus } from "../actions";
 import { cacheAsset, cachedAsset } from "../cache";
 import { Field, Queued } from "../components/Notice";
 import { PrintLabels, QrLabel, type LabelData } from "../components/QrLabel";
+import { Photos } from "../components/Photos";
 import { Scanner } from "../components/Scanner";
 import { api, NetworkError } from "../http";
 import { newClientId, newPublicId } from "../ids";
@@ -331,6 +332,8 @@ export function AssetScreen() {
           </button>
         </section>
       )}
+
+      <Photos kind="assets" id={asset.public_id} label={asset.label} />
 
       <PrintLabels labels={newLabels} />
 

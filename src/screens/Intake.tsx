@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { cacheAsset, cacheLot } from "../cache";
 import { Field, Queued } from "../components/Notice";
+import { PhotoPicker } from "../components/Photos";
 import { PrintLabels, type LabelData } from "../components/QrLabel";
 import { newClientId, newPublicId } from "../ids";
 import { KINDS, KIND_LABEL, kg } from "../labels";
+import { uploadPhoto, type PhotoSubject } from "../photo";
 import { sendOrQueue } from "../send";
 import type { Asset, Kind, Lot } from "../types";
 
@@ -26,6 +28,7 @@ export function Intake() {
   const [lotKg, setLotKg] = useState("");
   const [generatorPublic, setGeneratorPublic] = useState(false);
   const [notes, setNotes] = useState("");
+  const [lotPhotos, setLotPhotos] = useState<Blob[]>([]);
 
   // formulario de equipo
   const [kind, setKind] = useState<Kind>("computadora");
@@ -33,8 +36,29 @@ export function Intake() {
   const [serial, setSerial] = useState("");
   const [assetKg, setAssetKg] = useState("");
   const [hasStorage, setHasStorage] = useState(true);
+  const [assetPhotos, setAssetPhotos] = useState<Blob[]>([]);
   const [created, setCreated] = useState<Asset[]>([]);
   const [labels, setLabels] = useState<LabelData[]>([]);
+
+  /** Sube las fotos preparadas de un lote/equipo recién creado. Devuelve true si alguna quedó en cola. */
+  async function uploadStaged(
+    kind: PhotoSubject,
+    id: string,
+    blobs: Blob[],
+    label: string,
+    parentQueued: boolean,
+  ): Promise<boolean> {
+    let anyQueued = false;
+    for (const blob of blobs) {
+      try {
+        const r = await uploadPhoto(kind, id, blob, label, { forceQueue: parentQueued });
+        anyQueued ||= r.queued;
+      } catch (e) {
+        setError(`Se registró, pero una foto no se pudo enviar: ${e instanceof Error ? e.message : "error desconocido"}`);
+      }
+    }
+    return anyQueued;
+  }
 
   async function createLot() {
     const weight = parseKg(lotKg);
@@ -69,6 +93,9 @@ export function Intake() {
       setLot(value);
       setQueued(res.queued);
       setLabels([{ kind: "l", id: value.public_id, title: `Lote ${value.generator_name}`, subtitle: kg(value.weight_kg) }]);
+      const photoQueued = await uploadStaged("lots", value.public_id, lotPhotos, `lote ${value.generator_name}`, res.queued);
+      if (photoQueued) setQueued(true);
+      setLotPhotos([]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo crear el lote");
     } finally {
@@ -126,6 +153,9 @@ export function Intake() {
       await cacheAsset(asset);
       setCreated((c) => [asset, ...c]);
       setLabels((l) => [...l, { kind: "a", id: asset.public_id, title: asset.label, assetKind: asset.kind }]);
+      const photoQueued = await uploadStaged("assets", asset.public_id, assetPhotos, asset.label, res.queued);
+      if (photoQueued) setQueued(true);
+      setAssetPhotos([]);
       setLabel("");
       setSerial("");
       setAssetKg("");
@@ -155,6 +185,7 @@ export function Intake() {
         <Field label="Notas (opcional)">
           <input value={notes} onChange={(e) => setNotes(e.target.value)} />
         </Field>
+        <PhotoPicker label="Foto del lote (opcional)" blobs={lotPhotos} onChange={setLotPhotos} />
         {error && <p className="error">{error}</p>}
         <button className="btn big" onClick={createLot} disabled={busy}>
           Registrar lote
@@ -208,6 +239,7 @@ export function Intake() {
           <input type="checkbox" checked={hasStorage || kind === "disco"} disabled={kind === "disco"} onChange={(e) => setHasStorage(e.target.checked)} />
           Tiene almacenamiento (hay que borrar los datos antes de reutilizarlo)
         </label>
+        <PhotoPicker label="Foto del equipo (opcional)" blobs={assetPhotos} onChange={setAssetPhotos} />
         {error && <p className="error">{error}</p>}
         <button className="btn big" onClick={addAsset} disabled={busy}>
           Agregar equipo y generar etiqueta

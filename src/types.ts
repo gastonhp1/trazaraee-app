@@ -119,6 +119,15 @@ export interface PublicLot {
   chain_verified: boolean;
 }
 
+export interface PhotoMeta {
+  public_id: string;
+  content_type: string;
+  size_bytes: number;
+  sha256: string;
+  caption: string | null;
+  created_at: string;
+}
+
 export interface Station {
   id: number;
   name: string;
