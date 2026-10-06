@@ -2,7 +2,41 @@
 
 PWA para usar en planta (celular o tablet) en una cooperativa de reciclaje informático: recibir lotes, etiquetar equipos con QR, registrar pruebas, borrado de datos, desarme, ventas, donaciones y salidas de scrap. Funciona sin conexión y sincroniza sola cuando vuelve la señal. Repo hermano: `trazaraee-api`.
 
-> **Estado: prototipo.** Las pantallas siguen un flujo inferido de información pública sobre cooperativas de este tipo (ingreso → prueba → desarme/borrado → venta, donación o scrap). **No fue probado en un galpón real ni con usuarios.** Tampoco se ejercitó la interfaz en un navegador: lo verificado es el tipado, el build, la lógica pura y la cola offline contra una API real (ver Tests). Lo primero que hay que hacer con esto es llevarlo a una planta y mirar cómo se trabaja de verdad.
+> **Estado: prototipo.** Las pantallas siguen un flujo inferido de información pública sobre cooperativas de este tipo (ingreso → prueba → desarme/borrado → venta, donación o scrap). **No fue probado en un galpón real ni con usuarios.** La interfaz se recorrió de punta a punta en un Chromium con formato de celular contra la API real (ver Capturas), pero no en dispositivos reales. Lo primero que hay que hacer con esto es llevarlo a una planta y mirar cómo se trabaja de verdad.
+
+## Capturas
+
+Tomadas en Chromium con viewport de celular (390×844) contra la API real, con **datos de demo ficticios** (ninguna empresa, institución ni equipo es real). Los flujos de ingreso, desarme y el caso sin conexión se hicieron manejando la interfaz, no cargando datos por detrás.
+
+**En planta**
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/01-inicio.png" alt="Inicio"><br><sub>Inicio</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/02-ingreso.png" alt="Ingreso de lote y etiquetas"><br><sub>Ingreso de lote y etiquetas QR</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/03-equipo.png" alt="Equipo con genealogía e historial"><br><sub>Equipo: acciones válidas, genealogía e historial</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/04-borrado-pendiente.png" alt="Equipo con borrado de datos pendiente"><br><sub>Venta, donación y reuso bloqueados hasta registrar el borrado de datos</sub></td>
+    <td align="center"><img src="docs/screenshots/05-desarme.png" alt="Formulario de desarme"><br><sub>Desarme: cada componente rescatado recibe su propio QR</sub></td>
+    <td align="center"><img src="docs/screenshots/06-desarme-etiquetas.png" alt="Etiquetas de los componentes"><br><sub>Etiquetas de los componentes y su vínculo con el equipo de origen</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/07-lote-balance.png" alt="Lote con balance de masas"><br><sub>Lote: salidas de material y balance de masas</sub></td>
+    <td align="center"><img src="docs/screenshots/10-sin-conexion.png" alt="Operación guardada sin conexión"><br><sub>Sin conexión: la operación queda guardada y se envía sola al volver la señal</sub></td>
+    <td></td>
+  </tr>
+</table>
+
+**Lo que ve quien escanea el QR** (sin iniciar sesión)
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/08-publico-equipo.png" alt="Vista pública de un equipo"><br><sub>Equipo: origen reservado, recorrido y verificación del historial. Sin serial ni destinatario.</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/09-publico-lote.png" alt="Vista pública de un lote"><br><sub>Lote: a dónde fue cada kilo (reuso, reciclado, disposición final)</sub></td>
+    <td></td>
+  </tr>
+</table>
 
 ## Pantallas
 
@@ -55,7 +89,8 @@ La prueba de integración cubre: guardar sin conexión y sincronizar en orden (l
 
 ## Límites conocidos
 
-- Sin probar en navegador ni en dispositivos reales (cámara, impresión de etiquetas, instalación como PWA).
+- Probada en Chromium de escritorio con formato de celular; **sin probar en dispositivos reales** (lectura de QR con la cámara, impresión de etiquetas, instalación como PWA, Safari y otros navegadores).
+- Un equipo que recibe un disco ya borrado no hereda su certificado: el certificado queda en el componente, que se ve en la genealogía del equipo.
 - Los íconos de la PWA son un SVG provisorio; para instalarla bien en algunos Android hacen falta PNG de 192 y 512 px.
 - El service worker cachea sólo el "cascarón" de la app; no hay búsqueda ni listados offline (se trabaja escaneando equipos que este dispositivo ya vio o creó).
 - Sin autenticación de personas, roles ni permisos finos: una clave por estación.

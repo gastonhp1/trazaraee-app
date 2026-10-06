@@ -4,7 +4,7 @@ import { cacheAsset, cacheLot } from "../cache";
 import { Field, Queued } from "../components/Notice";
 import { PrintLabels, type LabelData } from "../components/QrLabel";
 import { newClientId, newPublicId } from "../ids";
-import { KINDS, KIND_LABEL } from "../labels";
+import { KINDS, KIND_LABEL, kg } from "../labels";
 import { sendOrQueue } from "../send";
 import type { Asset, Kind, Lot } from "../types";
 
@@ -68,7 +68,7 @@ export function Intake() {
       await cacheLot(value);
       setLot(value);
       setQueued(res.queued);
-      setLabels([{ kind: "l", id: value.public_id, title: `Lote ${value.generator_name}`, subtitle: `${value.weight_kg} kg` }]);
+      setLabels([{ kind: "l", id: value.public_id, title: `Lote ${value.generator_name}`, subtitle: kg(value.weight_kg) }]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo crear el lote");
     } finally {
@@ -168,7 +168,7 @@ export function Intake() {
       <section className="card ok-card">
         <h2>Lote registrado</h2>
         <p>
-          <strong>{lot.generator_name}</strong> · {lot.weight_kg} kg
+          <strong>{lot.generator_name}</strong> · {kg(lot.weight_kg)}
         </p>
         {queued && <Queued />}
         <Link className="btn secondary small" to={`/lote/${lot.public_id}`}>

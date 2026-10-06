@@ -216,6 +216,7 @@ export function AssetScreen() {
         <div className="chips">
           <span className={`chip status-${asset.status}`}>{STATUS_LABEL[asset.status]}</span>
           {asset.has_storage &&
+            asset.status !== "desarmado" &&
             (asset.wiped ? <span className="chip good">Datos borrados</span> : <span className="chip bad">Falta borrado de datos</span>)}
         </div>
         <p className="hint">

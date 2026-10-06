@@ -9,7 +9,7 @@ export const STATUS_LABEL: Record<Status, string> = {
   donado: "Donado",
   scrap: "Scrap",
   desarmado: "Desarmado",
-  instalado: "Instalado en otro equipo",
+  instalado: "Instalado",
 };
 
 export const KIND_LABEL: Record<Kind, string> = {
